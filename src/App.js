@@ -26,7 +26,8 @@ class App extends Component {
     super(props);
     this.state = {
       text: "",
-      words: [
+      words: [],
+      wordCount: [
         { word: "hello", value: 3 },
         { word: "world", value: 1 },
         { word: "github", value: 1 },
@@ -36,12 +37,19 @@ class App extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  getWordListFromText(text) {
+    let words = text.match(/\b(\w+)\b/g).map(word => word.toUpperCase());
+    this.setState({ words: words });
+  }
+
   handleChange(event) {
     this.setState({ text: event.target.value });
+    this.getWordListFromText(event.target.value);
   }
 
   render() {
     const { classes } = this.props;
+    console.log(this.state.words);
     return (
       <Grid container justify="center" direction="row">
         <Grid item xs={12}>
@@ -67,7 +75,7 @@ class App extends Component {
         <Grid item xs={12}>
           <div style={{ width: 600, height: 400 }}>
             <ReactWordCloud
-              words={this.state.words}
+              words={this.state.wordCount}
               wordCountKey={"value"}
               wordKey={"word"}
             />
