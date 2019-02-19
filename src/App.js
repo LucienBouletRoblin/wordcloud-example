@@ -3,6 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import ReactWordCloud from "react-wordcloud";
 import { Grid } from "@material-ui/core";
+import countBy from "lodash/countBy"
 
 const styles = theme => ({
   container: {
@@ -25,21 +26,27 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: "",
+      text: "ceci est un exemple de nuage de mot et mot ressort bien car trois fois mot dans le texte",
       words: [],
-      wordCount: [
-        { word: "hello", value: 3 },
-        { word: "world", value: 1 },
-        { word: "github", value: 1 },
-        { word: "code", value: 1 }
+      wordCloud: [
       ]
     };
     this.handleChange = this.handleChange.bind(this);
   }
 
+  componentDidMount(){
+    this.getWordListFromText(this.state.text)
+  }
+
   getWordListFromText(text) {
     let words = text.match(/\b(\w+)\b/g).map(word => word.toUpperCase());
     this.setState({ words: words });
+    let wordCount = countBy(words);
+    let wordCloud = []
+    Object.entries(wordCount).forEach(entry => {
+      wordCloud.push({word: entry[0], value: entry[1]})
+    });
+    this.setState({ wordCloud: wordCloud });
   }
 
   handleChange(event) {
@@ -49,7 +56,6 @@ class App extends Component {
 
   render() {
     const { classes } = this.props;
-    console.log(this.state.words);
     return (
       <Grid container justify="center" direction="row">
         <Grid item xs={12}>
@@ -59,8 +65,7 @@ class App extends Component {
               label="Mots à afficher dans le nuage de mots"
               multiline
               style={{ margin: 8 }}
-              placeholder="Placeholder"
-              helperText="Le texte ou les mots seront analysés, puis leur occurence sera proportionnelle à la taille d'écriture du mot dans le nuage ci-dessous :"
+              helperText="Renseigner le texte, l'occurence de chaque mot sera proportionnelle à la taille d'écriture du mot dans le nuage ci-dessous :"
               fullWidth
               margin="normal"
               variant="outlined"
@@ -75,7 +80,7 @@ class App extends Component {
         <Grid item xs={12}>
           <div style={{ width: 600, height: 400 }}>
             <ReactWordCloud
-              words={this.state.wordCount}
+              words={this.state.wordCloud}
               wordCountKey={"value"}
               wordKey={"word"}
             />
